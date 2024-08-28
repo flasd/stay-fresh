@@ -1,0 +1,26 @@
+{
+  "name": "@flasd/stay-fresh",
+  "version": "1.0.3",
+  "description": "Watches for uninstalled dependencies",
+  "license": "MIT",
+  "author": "Marcel Coelho <flasd2@gmail.com>",
+  "type": "commonjs",
+  "main": "index.js",
+  "bin": {
+    "stay-fresh": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "yarn build"
+  },
+  "devDependencies": {
+    "@flasd/pretty-package": "1.0.3",
+    "@types/node": "18.16.0",
+    "ts-node": "10.9.1",
+    "typescript": "5.0.4"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}
