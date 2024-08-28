@@ -33,7 +33,26 @@ function checkDependencies(install: boolean) {
 
     let installedModules: string[] = [];
     try {
-      installedModules = fs.readdirSync("node_modules");
+      // Read the contents of the node_modules directory
+      installedModules = fs.readdirSync("node_modules").flatMap((item) => {
+        const itemPath = `node_modules/${item}`;
+        // Check if the item is a directory and starts with "@" (indicating a scoped package)
+        if (fs.statSync(itemPath).isDirectory() && item.startsWith("@")) {
+          try {
+            // For scoped packages, read the subdirectory and map each subitem to "scope/package"
+            return fs
+              .readdirSync(itemPath)
+              .map((subItem) => `${item}/${subItem}`);
+          } catch (error) {
+            // If there's an error reading the subdirectory, throw a more informative error
+            throw new Error(
+              `Failed to scan subdirectory ${itemPath}: ${error.message}`
+            );
+          }
+        }
+        // For non-scoped packages, return the item name as is
+        return item;
+      });
     } catch (error) {
       console.warn(
         "⚠️ Warning: Unable to read node_modules directory. Assuming no modules are installed."
