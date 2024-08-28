@@ -65,6 +65,11 @@ function checkDependencies(install: boolean) {
               packageJson.devDependencies[dependency]);
 
           if (specifiedVersion) {
+            // Check if specifiedVersion is not a semVer version (likely a file/git dependency)
+            if (!semver.valid(semver.coerce(specifiedVersion))) {
+              return true;
+            }
+
             try {
               const installedPackageJson = JSON.parse(
                 fs.readFileSync(
@@ -124,9 +129,8 @@ function checkDependencies(install: boolean) {
       packageManager = "bun";
     }
 
-    console.log(`📦 Detected ${packageManager} as the package manager.`);
-
     if (install) {
+      console.log(`📦 Detected ${packageManager} as the package manager.`);
       console.log("🚀 Installing missing dependencies...");
 
       execSync(`${packageManager} install`, { stdio: "inherit" });

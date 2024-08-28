@@ -70,6 +70,10 @@ function checkDependencies(install) {
                     (packageJson_1.devDependencies &&
                         packageJson_1.devDependencies[dependency]);
                 if (specifiedVersion) {
+                    // Check if specifiedVersion is not a semVer version (likely a file/git dependency)
+                    if (!semver_1.default.valid(semver_1.default.coerce(specifiedVersion))) {
+                        return true;
+                    }
                     try {
                         var installedPackageJson = JSON.parse(fs_1.default.readFileSync("node_modules/".concat(dependency, "/package.json"), "utf-8"));
                         var installedVersion = installedPackageJson.version;
@@ -113,8 +117,8 @@ function checkDependencies(install) {
         else if (fs_1.default.existsSync("bun.lockb")) {
             packageManager = "bun";
         }
-        console.log("\uD83D\uDCE6 Detected ".concat(packageManager, " as the package manager."));
         if (install) {
+            console.log("\uD83D\uDCE6 Detected ".concat(packageManager, " as the package manager."));
             console.log("🚀 Installing missing dependencies...");
             (0, child_process_1.execSync)("".concat(packageManager, " install"), { stdio: "inherit" });
             console.log("\n✅ All dependencies have been installed!");
