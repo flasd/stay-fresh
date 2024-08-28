@@ -2,8 +2,6 @@
 
 Ensuring all dependencies are properly installed is crucial for smooth development and CI processes. Missing dependencies can lead to unexpected errors and failed builds.
 
-For example, if a team member adds a new dependency but forgets to commit the updated `package.json`, other developers or CI pipelines might encounter errors when running the project.
-
 This package helps you avoid these issues by checking for missing dependencies and optionally installing them before running your development server or CI commands.
 
 ### Installation
