@@ -107,8 +107,11 @@ function checkDependencies(install: boolean) {
       process.exit(0);
     }
 
-    console.log(`🔍 Found ${missingDeps.length} missing dependencies:`);
+    console.log(`🔍 Missing Dependencies Detected!`);
+    console.log(`----------------------------`);
+    console.log(`Found ${missingDeps.length} missing dependencies:\n`);
     missingDeps.forEach((dep) => console.log(`  - ${dep}`));
+    console.log(`\n----------------------------`);
 
     // Detect package manager based on lock file
     let packageManager = packageJson.engines?.npm

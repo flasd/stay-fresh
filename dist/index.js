@@ -96,8 +96,11 @@ function checkDependencies(install) {
             console.log("✅ All dependencies are installed!");
             process.exit(0);
         }
-        console.log("\uD83D\uDD0D Found ".concat(missingDeps.length, " missing dependencies:"));
+        console.log("\uD83D\uDD0D Missing Dependencies Detected!");
+        console.log("----------------------------");
+        console.log("Found ".concat(missingDeps.length, " missing dependencies:\n"));
         missingDeps.forEach(function (dep) { return console.log("  - ".concat(dep)); });
+        console.log("\n----------------------------");
         // Detect package manager based on lock file
         var packageManager = ((_a = packageJson_1.engines) === null || _a === void 0 ? void 0 : _a.npm)
             ? "npm"
