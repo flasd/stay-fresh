@@ -41,7 +41,25 @@ function checkDependencies(install) {
         }
         var installedModules_1 = [];
         try {
-            installedModules_1 = fs_1.default.readdirSync("node_modules");
+            // Read the contents of the node_modules directory
+            installedModules_1 = fs_1.default.readdirSync("node_modules").flatMap(function (item) {
+                var itemPath = "node_modules/".concat(item);
+                // Check if the item is a directory and starts with "@" (indicating a scoped package)
+                if (fs_1.default.statSync(itemPath).isDirectory() && item.startsWith("@")) {
+                    try {
+                        // For scoped packages, read the subdirectory and map each subitem to "scope/package"
+                        return fs_1.default
+                            .readdirSync(itemPath)
+                            .map(function (subItem) { return "".concat(item, "/").concat(subItem); });
+                    }
+                    catch (error) {
+                        // If there's an error reading the subdirectory, throw a more informative error
+                        throw new Error("Failed to scan subdirectory ".concat(itemPath, ": ").concat(error.message));
+                    }
+                }
+                // For non-scoped packages, return the item name as is
+                return item;
+            });
         }
         catch (error) {
             console.warn("⚠️ Warning: Unable to read node_modules directory. Assuming no modules are installed.");
