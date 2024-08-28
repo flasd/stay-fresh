@@ -16,11 +16,15 @@
   "devDependencies": {
     "@flasd/pretty-package": "1.0.3",
     "@types/node": "18.16.0",
+    "@types/semver": "7.5.8",
     "ts-node": "10.9.1",
     "typescript": "5.0.4"
   },
   "private": false,
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "semver": "7.6.3"
   }
 }
