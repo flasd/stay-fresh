@@ -96,10 +96,15 @@ function checkDependencies(install) {
             console.log("✅ All dependencies are installed!");
             process.exit(0);
         }
-        console.log("\uD83D\uDD0D Missing Dependencies Detected!");
-        console.log("----------------------------");
-        console.log("Found ".concat(missingDeps.length, " missing dependencies:\n"));
-        missingDeps.forEach(function (dep) { return console.log("  - ".concat(dep)); });
+        console.log("\uD83D\uDD0D Found ".concat(missingDeps.length, " missing dependencies:"));
+        console.log("----------------------------\n");
+        missingDeps.forEach(function (dep) {
+            var _a, _b;
+            var version = ((_a = packageJson_1.dependencies) === null || _a === void 0 ? void 0 : _a[dep]) ||
+                ((_b = packageJson_1.devDependencies) === null || _b === void 0 ? void 0 : _b[dep]) ||
+                "unknown";
+            console.log("  - ".concat(dep, "@").concat(version));
+        });
         console.log("\n----------------------------");
         // Detect package manager based on lock file
         var packageManager = ((_a = packageJson_1.engines) === null || _a === void 0 ? void 0 : _a.npm)
@@ -123,9 +128,15 @@ function checkDependencies(install) {
         if (install) {
             console.log("\uD83D\uDCE6 Detected ".concat(packageManager, " as the package manager."));
             console.log("🚀 Installing missing dependencies...");
-            (0, child_process_1.execSync)("".concat(packageManager, " install"), { stdio: "inherit" });
-            console.log("\n✅ All dependencies have been installed!");
-            process.exit(0);
+            try {
+                (0, child_process_1.execSync)("".concat(packageManager, " install"), { stdio: "inherit" });
+                console.log("\n✅ All dependencies have been installed!");
+                process.exit(0);
+            }
+            catch (error) {
+                console.log("\n🛑 Installation process was interrupted or failed.");
+                process.exit(1);
+            }
         }
         else {
             var installCommand = "".concat(packageManager, " add ").concat(missingDeps.join(" "));

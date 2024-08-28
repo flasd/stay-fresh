@@ -107,10 +107,15 @@ function checkDependencies(install: boolean) {
       process.exit(0);
     }
 
-    console.log(`🔍 Missing Dependencies Detected!`);
-    console.log(`----------------------------`);
-    console.log(`Found ${missingDeps.length} missing dependencies:\n`);
-    missingDeps.forEach((dep) => console.log(`  - ${dep}`));
+    console.log(`🔍 Found ${missingDeps.length} missing dependencies:`);
+    console.log(`----------------------------\n`);
+    missingDeps.forEach((dep) => {
+      const version =
+        packageJson.dependencies?.[dep] ||
+        packageJson.devDependencies?.[dep] ||
+        "unknown";
+      console.log(`  - ${dep}@${version}`);
+    });
     console.log(`\n----------------------------`);
 
     // Detect package manager based on lock file
@@ -136,9 +141,14 @@ function checkDependencies(install: boolean) {
       console.log(`📦 Detected ${packageManager} as the package manager.`);
       console.log("🚀 Installing missing dependencies...");
 
-      execSync(`${packageManager} install`, { stdio: "inherit" });
-      console.log("\n✅ All dependencies have been installed!");
-      process.exit(0);
+      try {
+        execSync(`${packageManager} install`, { stdio: "inherit" });
+        console.log("\n✅ All dependencies have been installed!");
+        process.exit(0);
+      } catch (error) {
+        console.log("\n🛑 Installation process was interrupted or failed.");
+        process.exit(1);
+      }
     } else {
       const installCommand = `${packageManager} add ${missingDeps.join(" ")}`;
       console.log(
