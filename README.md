@@ -62,20 +62,46 @@ Add stay-fresh to your npm scripts in `package.json`:
 }
 ```
 
-For CI, add it as a step in your pipeline:
+For Git hooks, you can use Husky to run stay-fresh on checkout and pull. First, install Husky:
 
-```yaml
-steps:
-  - name: Install dependencies
-    run: npm install
-  - name: Check dependencies
-    run: npx stay-fresh check
-  - name: Run tests
-    run: npm test
+```sh
+yarn add husky
 ```
 
-This ensures all dependencies are properly installed before running your development server or CI commands, preventing errors due to missing modules.
+Then, add the following to your `package.json`:
 
-For more details on the implementation, check the `src/index.ts` file.
+```json
+{
+  "scripts": {
+    "prepare": "husky"
+  }
+}
+```
 
-This tool helps you maintain a consistent development environment and smooth CI process by ensuring all necessary dependencies are installed before running your project.
+and run the following command:
+
+```sh
+echo "post-checkout" > .husky/post-checkout
+echo "post-merge" > .husky/post-merge
+```
+
+Now open the created files and replace the content with the following:
+
+```sh
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+yarn stay-fresh check --install
+
+```
+
+Do the same for the `post-merge` file.
+
+Done! 🎉
+
+This setup ensures that your dependencies are always up-to-date:
+
+1. Before running your development server, stay-fresh will automatically check and install any missing dependencies.
+2. After pulling changes or switching branches, stay-fresh will run automatically to ensure your local environment matches the project requirements.
+
+By integrating stay-fresh into your workflow, you'll maintain a consistent development environment across your team and prevent errors caused by missing or outdated dependencies. This approach streamlines your development process and helps avoid "it works on my machine" scenarios, leading to smoother collaboration and more reliable CI/CD pipelines.
