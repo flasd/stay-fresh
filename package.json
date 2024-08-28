@@ -1,6 +1,6 @@
 {
   "name": "@flasd/stay-fresh",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Watches for uninstalled dependencies",
   "license": "MIT",
   "author": "Marcel Coelho <flasd2@gmail.com>",
