@@ -72,34 +72,43 @@ function checkDependencies(install: boolean) {
     console.log(`🔍 Found ${missingDeps.length} missing dependencies:`);
     missingDeps.forEach((dep) => console.log(`  - ${dep}`));
 
+    // Detect package manager based on lock file
+    let packageManager = packageJson.engines?.npm
+      ? "npm"
+      : packageJson.engines?.yarn
+      ? "yarn"
+      : packageJson.engines?.pnpm
+      ? "pnpm"
+      : packageJson.engines?.bun
+      ? "bun"
+      : "npm";
+
+    if (fs.existsSync("yarn.lock")) {
+      packageManager = "yarn";
+    } else if (fs.existsSync("pnpm-lock.yaml")) {
+      packageManager = "pnpm";
+    } else if (fs.existsSync("bun.lockb")) {
+      packageManager = "bun";
+    }
+
+    console.log(`📦 Detected ${packageManager} as the package manager.`);
+
     if (install) {
       console.log("🚀 Installing missing dependencies...");
-
-      // Detect package manager based on lock file
-      let packageManager = packageJson.engines?.npm
-        ? "npm"
-        : packageJson.engines?.yarn
-        ? "yarn"
-        : packageJson.engines?.pnpm
-        ? "pnpm"
-        : packageJson.engines?.bun
-        ? "bun"
-        : "npm";
-
-      if (fs.existsSync("yarn.lock")) {
-        packageManager = "yarn";
-      } else if (fs.existsSync("pnpm-lock.yaml")) {
-        packageManager = "pnpm";
-      } else if (fs.existsSync("bun.lockb")) {
-        packageManager = "bun";
-      }
-
-      console.log(`📦 Detected ${packageManager} as the package manager.`);
 
       execSync(`${packageManager} install`, { stdio: "inherit" });
       console.log("\n✅ All dependencies have been installed!");
       process.exit(0);
     } else {
+      const installCommand = `${packageManager} add ${missingDeps.join(" ")}`;
+      console.log(
+        "\n📋 You can install missing dependencies with this command:"
+      );
+      console.log(`   ${installCommand}`);
+      console.log(
+        "\nOr run stay-fresh check --install to install automatically."
+      );
+
       process.exit(1);
     }
   } catch (error) {

@@ -71,33 +71,37 @@ function checkDependencies(install) {
         }
         console.log("\uD83D\uDD0D Found ".concat(missingDeps.length, " missing dependencies:"));
         missingDeps.forEach(function (dep) { return console.log("  - ".concat(dep)); });
+        // Detect package manager based on lock file
+        var packageManager = ((_a = packageJson.engines) === null || _a === void 0 ? void 0 : _a.npm)
+            ? "npm"
+            : ((_b = packageJson.engines) === null || _b === void 0 ? void 0 : _b.yarn)
+                ? "yarn"
+                : ((_c = packageJson.engines) === null || _c === void 0 ? void 0 : _c.pnpm)
+                    ? "pnpm"
+                    : ((_d = packageJson.engines) === null || _d === void 0 ? void 0 : _d.bun)
+                        ? "bun"
+                        : "npm";
+        if (fs_1.default.existsSync("yarn.lock")) {
+            packageManager = "yarn";
+        }
+        else if (fs_1.default.existsSync("pnpm-lock.yaml")) {
+            packageManager = "pnpm";
+        }
+        else if (fs_1.default.existsSync("bun.lockb")) {
+            packageManager = "bun";
+        }
+        console.log("\uD83D\uDCE6 Detected ".concat(packageManager, " as the package manager."));
         if (install) {
             console.log("🚀 Installing missing dependencies...");
-            // Detect package manager based on lock file
-            var packageManager = ((_a = packageJson.engines) === null || _a === void 0 ? void 0 : _a.npm)
-                ? "npm"
-                : ((_b = packageJson.engines) === null || _b === void 0 ? void 0 : _b.yarn)
-                    ? "yarn"
-                    : ((_c = packageJson.engines) === null || _c === void 0 ? void 0 : _c.pnpm)
-                        ? "pnpm"
-                        : ((_d = packageJson.engines) === null || _d === void 0 ? void 0 : _d.bun)
-                            ? "bun"
-                            : "npm";
-            if (fs_1.default.existsSync("yarn.lock")) {
-                packageManager = "yarn";
-            }
-            else if (fs_1.default.existsSync("pnpm-lock.yaml")) {
-                packageManager = "pnpm";
-            }
-            else if (fs_1.default.existsSync("bun.lockb")) {
-                packageManager = "bun";
-            }
-            console.log("\uD83D\uDCE6 Detected ".concat(packageManager, " as the package manager."));
             (0, child_process_1.execSync)("".concat(packageManager, " install"), { stdio: "inherit" });
             console.log("\n✅ All dependencies have been installed!");
             process.exit(0);
         }
         else {
+            var installCommand = "".concat(packageManager, " add ").concat(missingDeps.join(" "));
+            console.log("\n📋 You can install missing dependencies with this command:");
+            console.log("   ".concat(installCommand));
+            console.log("\nOr run stay-fresh check --install to install automatically.");
             process.exit(1);
         }
     }
